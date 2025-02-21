@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request, redirect, url_for
+from flask import Flask, render_template, jsonify, request, redirect, url_for, send_from_directory
 import requests
 import logging
 import os
@@ -26,8 +26,7 @@ def proxy_live_score_details():
     logger.info("Fetching data from API URL: %s", api_url)
     try:
         response = requests.get(api_url, cookies=COOKIES, timeout=10)
-        # Raise an exception for HTTP errors
-        response.raise_for_status()
+        response.raise_for_status()  # Raise an exception for HTTP errors
         data = response.json()
         return jsonify(data)
     except requests.exceptions.HTTPError as http_err:
@@ -40,7 +39,6 @@ def proxy_live_score_details():
         logger.error("An unexpected error occurred: %s", e)
         return jsonify({"error": "An unexpected error occurred while processing your request."}), 500
 
-# Example route for rendering a template (ensure your templates folder exists)
 @app.route("/", methods=["GET", "POST"])
 def schedule():
     if request.method == "POST":
@@ -53,6 +51,13 @@ def schedule():
         except Exception as e:
             logger.error("Template rendering error: %s", e)
             return jsonify({"error": "Template not found or rendering error."}), 500
+
+# New route to serve compare.html (static file)
+@app.route("/compare")
+def compare():
+    # This assumes compare.html is in the same folder as app.py.
+    # If you move compare.html to a "static" folder, update the folder name accordingly.
+    return send_from_directory(os.getcwd(), "compare.html")
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
