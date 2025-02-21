@@ -39,7 +39,7 @@ def proxy_live_score_details():
         logger.error("An unexpected error occurred: %s", e)
         return jsonify({"error": "An unexpected error occurred while processing your request."}), 500
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/index", methods=["GET", "POST"])
 def schedule():
     if request.method == "POST":
         match_id = request.form.get("match_id", DEFAULT_MATCH_ID)
@@ -58,7 +58,7 @@ def compare():
     # This assumes compare.html is in the same folder as app.py.
     # If you move compare.html to a "static" folder, update the folder name accordingly.
     return send_from_directory(os.getcwd(), "compare.html")
-@app.route("/roster")
+@app.route("/")
 def roster():
     # This assumes roster.html is in the same folder as app.py.
     # If you move roster.html to a "static" folder, update the folder name accordingly.
