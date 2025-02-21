@@ -58,6 +58,21 @@ def compare():
     # This assumes compare.html is in the same folder as app.py.
     # If you move compare.html to a "static" folder, update the folder name accordingly.
     return send_from_directory(os.getcwd(), "compare.html")
+@app.route("/roster")
+def roster():
+    # This assumes roster.html is in the same folder as app.py.
+    # If you move roster.html to a "static" folder, update the folder name accordingly.
+    return send_from_directory(os.getcwd(), "roster.html")
+@app.route("/live")
+def live():
+    # This assumes live.html is in the same folder as app.py.
+    # If you move live.html to a "static" folder, update the folder name accordingly.
+    return send_from_directory(os.getcwd(), "live.html")
+@app.route("/standings")
+def standings():
+    # This assumes live.html is in the same folder as app.py.
+    # If you move live.html to a "static" folder, update the folder name accordingly.
+    return send_from_directory(os.getcwd(), "standings.html")
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
