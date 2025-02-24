@@ -20,8 +20,8 @@
     }
     /* General reset */
     * {
-      margin: 0; 
-      padding: 0; 
+      margin: 0;
+      padding: 0;
       box-sizing: border-box;
     }
     body {
@@ -53,7 +53,7 @@
       z-index: 1000;
     }
     .nav-container {
-      display: flex; 
+      display: flex;
       flex: 0.7;
     }
     .nav-container.left {
@@ -162,15 +162,59 @@
       gap: 15px;
       padding-bottom: 20px;
     }
-    .results-box::-webkit-scrollbar {
-      display: none;
+
+
+
+    
+
+    /* Custom scrollbar styling */
+    .results-box::-webkit-scrollbar,
+    .upcoming-box::-webkit-scrollbar {
+      width: 14px;
+      height: 14px;
     }
-    .results-box {
-      scrollbar-width: none;
-      -ms-overflow-style: none;
+
+    .results-box::-webkit-scrollbar-track,
+    .upcoming-box::-webkit-scrollbar-track {
+      background-color: rgba(200, 200, 200, 0.3);
+      border-radius: 10px;
+      margin: 2px;
+      border: 2px solid transparent; /* Added border */
     }
+
+    .results-box::-webkit-scrollbar-thumb,
+    .upcoming-box::-webkit-scrollbar-thumb {
+      background-color: #007BFF;
+      border-radius: 10px;
+      border: 2px solid rgba(255,255,255,0.2);
+      min-height: 40px;
+      background-clip: padding-box;
+      transition: all 0.3s ease;
+    }
+
+    .results-box::-webkit-scrollbar-thumb:hover,
+    .upcoming-box::-webkit-scrollbar-thumb:hover {
+      background-color: #0056b3;
+      width: 1px;
+    }
+
+    .results-box::-webkit-scrollbar-corner,
+    .upcoming-box::-webkit-scrollbar-corner {
+      background-color: transparent;
+    }
+
+
+
+    .event-details p {
+      font-size: 1rem;
+      color: #333;
+    }
+
+
+    /* Updated: Cards are now all gray with blue text */
     .event-card {
-      background-color: #fff;
+      background-color: rgba(200,200,200);
+      color: #007BFF;
       padding: 15px;
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -190,6 +234,18 @@
       object-fit: cover;
       border-radius: 50%;
     }
+    /* Logo containers */
+    .home-logo-container,
+    .opponent-logo-container {
+      display: flex;
+      align-items: center;
+    }
+    .home-logo-container {
+      margin-right: 10px;
+    }
+    .opponent-logo-container {
+      margin-left: 10px;
+    }
     .event-details {
       flex: 1;
       text-align: center;
@@ -199,7 +255,7 @@
     }
     .event-details p {
       font-size: 1rem;
-      color: #333;
+      margin: 0;
     }
     .event-details p strong {
       color: #007BFF;
@@ -209,9 +265,9 @@
       display: none;
       position: fixed;
       z-index: 2000;
-      left: 0; 
+      left: 0;
       top: 0;
-      width: 100%; 
+      width: 100%;
       height: 100%;
       background-color: rgba(0,0,0,0.7);
     }
@@ -236,12 +292,12 @@
     }
     @keyframes fadeIn {
       from { 
-        opacity: 0; 
-        transform: translateY(-10px); 
+        opacity: 0;
+        transform: translateY(-10px);
       }
-      to { 
-        opacity: 1; 
-        transform: translateY(0); 
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
     }
     .close-btn {
@@ -299,25 +355,25 @@
       margin-bottom: 20px;
     }
     @media (max-width: 768px) {
-      .navbar { 
-        width: 90%; 
-        padding: 15px 20px; 
+      .navbar {
+        width: 90%;
+        padding: 15px 20px;
       }
-      .match-box { 
-        width: 90%; 
+      .match-box {
+        width: 90%;
       }
     }
     @media (max-width: 480px) {
-      .navbar { 
-        flex-direction: column; 
-        padding: 10px; 
+      .navbar {
+        flex-direction: column;
+        padding: 10px;
       }
-      .nav-links { 
-        flex-direction: column; 
-        gap: 10px; 
+      .nav-links {
+        flex-direction: column;
+        gap: 10px;
       }
-      .logo img { 
-        width: 40px; 
+      .logo img {
+        width: 40px;
       }
     }
   </style>
@@ -338,8 +394,8 @@
     <div class="nav-container right">
       <ul class="nav-links">
         <li><a href="live">Live</a></li>
-        <li><a href="index">Schedule</a></li>
-        <li><a href="">Statistics</a></li>
+        <li><a href="schedule">Schedule</a></li>
+        <li><a href="allteamsschedule">Matches</a></li>
       </ul>
     </div>
   </div>
@@ -393,7 +449,7 @@
       return `${min}:${sec < 10 ? "0"+sec : sec}`;
     }
 
-    // Utility: Format ISO date duration (fallback usage).
+    // Utility: Format ISO date duration.
     function formatDuration(isoString) {
       if (!isoString) return "N/A";
       const date = new Date(isoString);
@@ -417,7 +473,7 @@
       }
     }
 
-    // Populate the scoreboard modal with live score data.
+    // Populate the scoreboard modal.
     function populateScorecardModal(data) {
       const modalBody = document.getElementById("scorecard-modal-body");
       modalBody.innerHTML = "";
@@ -434,9 +490,14 @@
         else if (match.winner === "V") visitingWins++;
       });
       let winner = (homeWins > visitingWins) ? homeTeam : (visitingWins > homeWins ? visitingTeam : "Draw");
-      let summaryColor = (winner === "Connecticut College") 
-                          ? "rgba(0,255,0,0.2)" 
-                          : (winner === "Draw" ? "rgba(200,200,200,0.3)" : "rgba(255,0,0,0.2)");
+      let summaryColor;
+      if (winner === "Draw") {
+        summaryColor = "rgba(200,200,200,0.3)";
+      } else if (winner === homeTeam) {
+        summaryColor = "rgba(0,255,0,0.2)";
+      } else {
+        summaryColor = "rgba(255,0,0,0.2)";
+      }
       const summaryDiv = document.createElement("div");
       summaryDiv.style.padding = "15px";
       summaryDiv.style.borderRadius = "10px";
@@ -498,7 +559,6 @@
         graphBtn.addEventListener("mouseout", () => {
           graphBtn.style.backgroundColor = "#007BFF";
         });
-        // Use the match's own matchId to fetch its live data.
         graphBtn.addEventListener("click", (e) => {
           e.stopPropagation();
           showGraphModal(match);
@@ -526,7 +586,6 @@
       if (event.target == modal) modal.style.display = "none";
     });
 
-    // Show Graph Modal with tabbed pages, bigger styling, second graph, etc.
     async function showGraphModal(match) {
       const match_id = match.matchId;
       if (!match_id) {
@@ -537,7 +596,6 @@
       const graphStatus = document.getElementById("graph-status");
       graphStatus.textContent = "Loading match insights...";
 
-      // Fetch data from the proxy.
       let data;
       try {
         const response = await fetch(apiUrl, { method: "GET", credentials: "include" });
@@ -552,7 +610,6 @@
         return;
       }
 
-      // Filter scoring events.
       const allPoints = data.filter(evt => evt.Decision === "point");
       if (allPoints.length < 2) {
         graphStatus.textContent = "Not enough scoring events to compute metrics.";
@@ -560,11 +617,9 @@
       }
       allPoints.sort((a, b) => new Date(a.StartDate) - new Date(b.StartDate));
 
-      // Player names for labeling
       const homePlayerName = match.playerHome1Name || "Home Player";
       const visitingPlayerName = match.playerVisiting1Name || "Visiting Player";
 
-      // Figure out how many games each player won (match score)
       const gameMap = {};
       for (let evt of allPoints) {
         const g = evt.Game_Number;
@@ -575,11 +630,9 @@
 
       let homeGamesWon = 0;
       let visitingGamesWon = 0;
-
-      // We'll store final game scores for a bar chart
       const homeGameScores = [];
       const visitingGameScores = [];
-      const gameLabels = []; // e.g. ["Game 1", "Game 2", ...]
+      const gameLabels = [];
 
       uniqueGames.forEach(gameNum => {
         const eventsInGame = gameMap[gameNum].sort((a,b)=>new Date(a.StartDate)-new Date(b.StartDate));
@@ -588,25 +641,21 @@
         gameLabels.push(`Game ${gameNum}`);
         homeGameScores.push(finalLeft);
         visitingGameScores.push(finalRight);
-        // Who won?
         if (finalLeft > finalRight) homeGamesWon++;
         else if (finalRight > finalLeft) visitingGamesWon++;
       });
 
-      // Overall match length stats
       const firstTime = new Date(allPoints[0].StartDate);
       const lastTime = new Date(allPoints[allPoints.length - 1].StartDate);
       const matchLengthSec = (lastTime - firstTime) / 1000;
       const averagePointSec = matchLengthSec / (allPoints.length - 1);
 
-      // Longest point in entire match
       let longestPointSec = 0;
       for (let i = 1; i < allPoints.length; i++) {
         const diffSec = (new Date(allPoints[i].StartDate) - new Date(allPoints[i-1].StartDate)) / 1000;
         if (diffSec > longestPointSec) longestPointSec = diffSec;
       }
 
-      // Average game length
       const gameLengthsSec = uniqueGames.map(g => {
         const events = gameMap[g].sort((a,b)=>new Date(a.StartDate)-new Date(b.StartDate));
         const start = new Date(events[0].StartDate);
@@ -615,26 +664,22 @@
       });
       const averageGameSec = gameLengthsSec.reduce((a,b)=>a+b,0) / gameLengthsSec.length;
 
-      // Build tabbed interface
       const tabNav = document.createElement("div");
       tabNav.id = "tab-nav";
 
       const tabContent = document.createElement("div");
       tabContent.id = "tab-content";
 
-      // Overview tab button
       const overviewTabBtn = document.createElement("button");
       overviewTabBtn.textContent = "Overview";
       overviewTabBtn.classList.add("tab-button", "active");
       tabNav.appendChild(overviewTabBtn);
 
-      // Overview tab content
       const overviewContent = document.createElement("div");
       overviewContent.classList.add("tab-content-pane");
       overviewContent.id = "overview-tab";
       overviewContent.style.display = "block";
 
-      // Match Score
       const matchScoreDiv = document.createElement("div");
       matchScoreDiv.style.marginBottom = "15px";
       matchScoreDiv.innerHTML = `
@@ -643,7 +688,6 @@
       `;
       overviewContent.appendChild(matchScoreDiv);
 
-      // Additional stats row
       const overviewStats = document.createElement("div");
       overviewStats.style.display = "flex";
       overviewStats.style.justifyContent = "center";
@@ -666,7 +710,6 @@
 
       overviewContent.appendChild(overviewStats);
 
-      // Bar chart for game scores
       const barChartDiv = document.createElement("div");
       barChartDiv.style.maxWidth = "600px";
       barChartDiv.style.margin = "0 auto 20px auto";
@@ -675,7 +718,6 @@
       barChartDiv.appendChild(barCanvas);
       overviewContent.appendChild(barChartDiv);
 
-      // Initialize the bar chart for game scores
       new Chart(barCanvas.getContext('2d'), {
         type: 'bar',
         data: {
@@ -715,7 +757,6 @@
 
       tabContent.appendChild(overviewContent);
 
-      // Create a tab for each game
       uniqueGames.forEach(gameNum => {
         const gameTabBtn = document.createElement("button");
         gameTabBtn.textContent = `Game ${gameNum}`;
@@ -731,16 +772,12 @@
         if (pointsGame.length === 0) {
           gameContent.innerHTML = `<div style="text-align:center; font-size:16px;">No data for Game ${gameNum}</div>`;
         } else {
-          // final scoreboard for that game
           const finalLeft = pointsGame[pointsGame.length - 1].Points_left;
           const finalRight = pointsGame[pointsGame.length - 1].Points_right;
-
-          // compute game length
           const start = new Date(pointsGame[0].StartDate);
           const end = new Date(pointsGame[pointsGame.length - 1].StartDate);
           const gameLengthSec = (end - start) / 1000;
 
-          // compute intervals to find longest point & average point length for this game
           const intervals = [];
           for (let i = 1; i < pointsGame.length; i++) {
             const diffSec = (new Date(pointsGame[i].StartDate) - new Date(pointsGame[i-1].StartDate)) / 1000;
@@ -749,7 +786,6 @@
           const longestPointSecGame = intervals.length ? Math.max(...intervals) : 0;
           const avgPointSecGame = intervals.length ? intervals.reduce((a,b)=>a+b,0)/intervals.length : 0;
 
-          // scoreboard / stats
           const scoreboardDiv = document.createElement("div");
           scoreboardDiv.style.marginBottom = "15px";
           scoreboardDiv.innerHTML = `
@@ -769,7 +805,6 @@
           `;
           gameContent.appendChild(scoreboardDiv);
 
-          // line chart for scoring progression
           const x = pointsGame.map(evt => evt.Points_left + evt.Points_right);
           const p1_scores = pointsGame.map(evt => evt.Points_left);
           const p2_scores = pointsGame.map(evt => evt.Points_right);
@@ -829,7 +864,6 @@
             }
           });
 
-          // Second chart: time intervals between points (helpful data)
           const intervalCanvas = document.createElement("canvas");
           intervalCanvas.style.maxWidth = "100%";
           intervalCanvas.style.height = "200px";
@@ -865,7 +899,6 @@
         }
         tabContent.appendChild(gameContent);
 
-        // Tab button click event
         gameTabBtn.addEventListener("click", () => {
           tabContent.querySelectorAll(".tab-content-pane").forEach(pane => pane.style.display = "none");
           tabNav.querySelectorAll(".tab-button").forEach(btn => btn.classList.remove("active"));
@@ -874,7 +907,6 @@
         });
       });
 
-      // Overview tab button event
       overviewTabBtn.addEventListener("click", () => {
         tabContent.querySelectorAll(".tab-content-pane").forEach(pane => pane.style.display = "none");
         tabNav.querySelectorAll(".tab-button").forEach(btn => btn.classList.remove("active"));
@@ -882,7 +914,6 @@
         overviewTabBtn.classList.add("active");
       });
 
-      // Clear and update the metrics container
       const metricsContainer = document.getElementById("metrics-container");
       metricsContainer.innerHTML = "";
       metricsContainer.appendChild(tabNav);
@@ -892,6 +923,7 @@
       document.getElementById("graph-modal").style.display = "block";
     }
 
+    // Close graph modal on button or outside click.
     function closeGraphModal() {
       document.getElementById("graph-modal").style.display = "none";
     }
@@ -901,67 +933,92 @@
       if (event.target == graphModal) graphModal.style.display = "none";
     });
 
-    // Create a match card that opens the scoreboard modal when clicked.
-    function createCard(event, isCompleted) {
+    // Revised createCard function.
+    // Displays home team logo on the left, match details in the center, and opponent logo on the right.
+    function createCard(matchData, isCompleted) {
       const card = document.createElement("div");
       card.classList.add("event-card");
-      card.dataset.scorecardid = event.scorecardid;
-
-      const opponentLogo = event.oLogo || event.wLogo;
-      if (opponentLogo) {
-        const logoImg = document.createElement("img");
-        logoImg.classList.add("event-logo");
-        logoImg.src = opponentLogo;
-        logoImg.alt = (event.oTeamName || event.teamname) + " logo";
-        card.appendChild(logoImg);
+      card.dataset.scorecardid = matchData.scorecardid;
+      
+      // Left container: Home team logo (wLogo)
+      const homeLogoContainer = document.createElement("div");
+      homeLogoContainer.classList.add("home-logo-container");
+      if (matchData.wLogo) {
+        const homeLogo = document.createElement("img");
+        homeLogo.classList.add("event-logo");
+        homeLogo.src = matchData.wLogo;
+        homeLogo.alt = (matchData.teamname || "Home") + " logo";
+        homeLogoContainer.appendChild(homeLogo);
       }
-
+      card.appendChild(homeLogoContainer);
+      
+      // Middle container: Match details.
       const detailsDiv = document.createElement("div");
       detailsDiv.classList.add("event-details");
+      
       const dateP = document.createElement("p");
-      dateP.innerHTML = `<strong>Date:</strong> ${event.matchdate || 'TBD'}`;
-      const opponentP = document.createElement("p");
-      opponentP.innerHTML = `<strong>Opponent:</strong> ${event.oTeamName || event.teamname || 'TBD'}`;
-      const venueP = document.createElement("p");
-      venueP.innerHTML = `<strong>Venue:</strong> ${event.VenueName || 'TBD'}`;
+      dateP.innerHTML = `<strong>Date:</strong> ${matchData.matchdate || 'TBD'}`;
       detailsDiv.appendChild(dateP);
-      detailsDiv.appendChild(opponentP);
+      
+      const homeTeam = matchData.teamname || "TBD";
+      const opponentTeam = matchData.oTeamName || "TBD";
+      const teamsP = document.createElement("p");
+      teamsP.innerHTML = `<strong>${homeTeam}</strong> vs <strong>${opponentTeam}</strong>`;
+      detailsDiv.appendChild(teamsP);
+      
+      const venueP = document.createElement("p");
+      venueP.innerHTML = `<strong>Venue:</strong> ${matchData.VenueName || 'TBD'}`;
       detailsDiv.appendChild(venueP);
-
+      
       if (!isCompleted) {
         const timeP = document.createElement("p");
-        timeP.innerHTML = `<strong>Time:</strong> ${event.MatchTime || 'TBD'}`;
+        timeP.innerHTML = `<strong>Time:</strong> ${matchData.MatchTime || 'TBD'}`;
         detailsDiv.appendChild(timeP);
       }
-
-      if (isCompleted && event.wins !== undefined && event.losses !== undefined) {
+      
+      if (isCompleted &&
+          matchData.Home_Matches_Won !== undefined &&
+          matchData.Visitor_Matches_Won !== undefined) {
+        const homeWins = matchData.Home_Matches_Won;
+        const visitorWins = matchData.Visitor_Matches_Won;
         let outcome = "";
-        if (event.wins > event.losses) {
-          outcome = `Win vs ${event.teamname} (${event.wins}-${event.losses})`;
-          card.style.backgroundColor = "rgba(0,255,0,0.3)";
-        } else if (event.wins < event.losses) {
-          outcome = `Lose vs ${event.oTeamName || event.wTeamName || 'Opponent'} (${event.losses}-${event.wins})`;
-          card.style.backgroundColor = "rgba(255,0,0,0.3)";
+        if (homeWins > visitorWins) {
+          outcome = `Win vs ${opponentTeam} (${homeWins}-${visitorWins})`;
+        } else if (homeWins < visitorWins) {
+          outcome = `Lose vs ${opponentTeam} (${visitorWins}-${homeWins})`;
         } else {
-          outcome = `Tie: ${event.wins}-${event.losses}`;
-          card.style.backgroundColor = "rgba(90,90,90,0.3)";
+          outcome = `Tie: (${homeWins}-${visitorWins})`;
         }
         const resultP = document.createElement("p");
         resultP.innerHTML = `<strong>Result:</strong> ${outcome}`;
         detailsDiv.appendChild(resultP);
       }
-
+      
       card.appendChild(detailsDiv);
-      card.addEventListener("click", function (e) {
+      
+      // Right container: Opponent logo (oLogo)
+      const opponentLogoContainer = document.createElement("div");
+      opponentLogoContainer.classList.add("opponent-logo-container");
+      if (matchData.oLogo) {
+        const opponentLogo = document.createElement("img");
+        opponentLogo.classList.add("event-logo");
+        opponentLogo.src = matchData.oLogo;
+        opponentLogo.alt = (matchData.oTeamName || "Opponent") + " logo";
+        opponentLogoContainer.appendChild(opponentLogo);
+      }
+      card.appendChild(opponentLogoContainer);
+      
+      card.addEventListener("click", function(e) {
         e.stopPropagation();
-        showScorecardModal(event.scorecardid);
+        showScorecardModal(matchData.scorecardid);
       });
       return card;
     }
 
+    // Fetch schedule data as provided.
     async function fetchSchedule() {
       try {
-        const response = await fetch("https://api.ussquash.com/resources/teams/40867/schedule", {
+        const response = await fetch("https://api.ussquash.com/resources/divisions/schedule/5208/", {
           headers: {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
           }
@@ -974,56 +1031,45 @@
       }
     }
 
-    function transformEventData(event) {
-      // If the "teamname" is the same as wTeamName, swap the "w" properties to "o"
-      if (event.teamname === event.wTeamName) {
-        for (const key in event) {
-          if (key.startsWith("w")) {
-            const newKey = "o" + key.substring(1);
-            event[newKey] = event[key];
-          }
-        }
-      }
-      return event;
-    }
-
     async function displaySchedule() {
       const schedule = await fetchSchedule();
-      const transformedSchedule = schedule.map(event => transformEventData(event));
       const upcomingContainer = document.querySelector(".upcoming-cards");
       const resultsContainer = document.querySelector(".results-cards");
       const upcomingEvents = [];
       const completedEvents = [];
       const now = new Date();
-
-      transformedSchedule.forEach(event => {
+      
+      schedule.forEach(event => {
         const eventDate = new Date(event.matchdate);
         if (isNaN(eventDate.getTime())) {
-          if (event.wins === undefined && event.losses === undefined) upcomingEvents.push(event);
-          else completedEvents.push(event);
-        } else {
-          if (eventDate > now || (event.wins === undefined && event.losses === undefined))
+          if (event.Home_Matches_Won === undefined && event.Visitor_Matches_Won === undefined)
             upcomingEvents.push(event);
-          else completedEvents.push(event);
+          else
+            completedEvents.push(event);
+        } else {
+          if (eventDate > now || (event.Home_Matches_Won === undefined && event.Visitor_Matches_Won === undefined))
+            upcomingEvents.push(event);
+          else
+            completedEvents.push(event);
         }
       });
-
+      
       completedEvents.sort((a, b) => new Date(b.matchdate) - new Date(a.matchdate));
-
+      
       upcomingContainer.innerHTML = "";
       resultsContainer.innerHTML = "";
-
+      
       upcomingEvents.forEach(event => {
         const card = createCard(event, false);
         upcomingContainer.appendChild(card);
       });
-
+      
       completedEvents.forEach(event => {
         const card = createCard(event, true);
         resultsContainer.appendChild(card);
       });
     }
-
+    
     displaySchedule();
   </script>
 </body>

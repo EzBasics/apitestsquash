@@ -39,7 +39,7 @@ def proxy_live_score_details():
         logger.error("An unexpected error occurred: %s", e)
         return jsonify({"error": "An unexpected error occurred while processing your request."}), 500
 
-@app.route("/index", methods=["GET", "POST"])
+@app.route("/schedule", methods=["GET", "POST"])
 def schedule():
     if request.method == "POST":
         match_id = request.form.get("match_id", DEFAULT_MATCH_ID)
@@ -47,32 +47,56 @@ def schedule():
     else:
         match_id = request.args.get("match_id", DEFAULT_MATCH_ID)
         try:
-            return render_template("index.html", match_id=match_id)
+            return render_template("schedule.html", match_id=match_id)
+        except Exception as e:
+            logger.error("Template rendering error: %s", e)
+            return jsonify({"error": "Template not found or rendering error."}), 500
+        
+@app.route("/allteamsschedule", methods=["GET", "POST"])
+def schedule2():
+    if request.method == "POST":
+        match_id = request.form.get("match_id", DEFAULT_MATCH_ID)
+        return redirect(url_for("schedule2", match_id=match_id))
+    else:
+        match_id = request.args.get("match_id", DEFAULT_MATCH_ID)
+        try:
+            return render_template("allteamsschedule.html", match_id=match_id)
         except Exception as e:
             logger.error("Template rendering error: %s", e)
             return jsonify({"error": "Template not found or rendering error."}), 500
 
-# New route to serve compare.html (static file)
 @app.route("/compare")
 def compare():
-    # This assumes compare.html is in the same folder as app.py.
-    # If you move compare.html to a "static" folder, update the folder name accordingly.
     return send_from_directory(os.getcwd(), "compare.html")
+
 @app.route("/")
 def roster():
-    # This assumes roster.html is in the same folder as app.py.
-    # If you move roster.html to a "static" folder, update the folder name accordingly.
     return send_from_directory(os.getcwd(), "roster.html")
+
 @app.route("/live")
 def live():
-    # This assumes live.html is in the same folder as app.py.
-    # If you move live.html to a "static" folder, update the folder name accordingly.
     return send_from_directory(os.getcwd(), "live.html")
+
+@app.route("/livescores")
+def livescores():
+    return send_from_directory(os.getcwd(), "livescores.html")
+
 @app.route("/standings")
 def standings():
-    # This assumes live.html is in the same folder as app.py.
-    # If you move live.html to a "static" folder, update the folder name accordingly.
     return send_from_directory(os.getcwd(), "standings.html")
+
+@app.route("/teamtournament")
+def teamtournament():
+    # This route serves teamtournament.html and will include any query parameters.
+    return send_from_directory(os.getcwd(), "teamtournament.html")
+
+@app.route("/tournaments")
+def tournaments():
+    return send_from_directory(os.getcwd(), "tournaments.html")
+
+@app.route("/singlestournament")
+def singlestournament():
+    return send_from_directory(os.getcwd(), "singlestournament.html")
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

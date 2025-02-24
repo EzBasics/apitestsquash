@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tournament Draws</title>
+  <style>
+    :root {
+      --background-image: url("/static/csabackground.png");
+    }
+    @font-face {
+      font-family: 'Work Sans';
+      font-style: normal;
+      font-weight: 300;
+      src: url(https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32KxfXBiEJow.ttf) format('truetype');
+    }
+    @font-face {
+      font-family: 'Work Sans';
+      font-style: normal;
+      font-weight: 400;
+      src: url(https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K0nXBiEJow.ttf) format('truetype');
+    }
+    @font-face {
+      font-family: 'Work Sans';
+      font-style: normal;
+      font-weight: 600;
+      src: url(https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K5fQBiEJow.ttf) format('truetype');
+    }
+    @font-face {
+      font-family: 'Work Sans';
+      font-style: normal;
+      font-weight: 700;
+      src: url(https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K67QBiEJow.ttf) format('truetype');
+    }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+    html {
+      font-size: 15px;
+    }
+    @media (min-width: 38em) { html { font-size: 14px; } }
+    @media (min-width: 52em) { html { font-size: 15px; } }
+    @media (min-width: 72em) { html { font-size: 16px; } }
+    body {
+      background-image: var(--background-image);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      font-family: 'Work Sans', 'Helvetica Neue', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      width: 90%;
+      min-width: 18em;
+      margin: 20px auto;
+      background: rgba(255,255,255,0.9);
+      padding: 1em;
+      border-radius: 8px;
+    }
+    h1,
+    h2 {
+      text-align: center;
+      margin: 0.5em 0;
+    }
+    h1 { font-size: 2rem; font-weight: 700; }
+    h2 { font-size: 1.4rem; font-weight: 600; margin-bottom: 1em; }
+    #draw-buttons {
+      text-align: center;
+      margin-bottom: 1.5em;
+    }
+    .button-18 {
+      align-items: center;
+      background-color: #0A66C2;
+      border: 0;
+      border-radius: 100px;
+      box-sizing: border-box;
+      color: #ffffff;
+      cursor: pointer;
+      display: inline-flex;
+      font-family: -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Fira Sans", Ubuntu, Oxygen, "Oxygen Sans", Cantarell, "Droid Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Lucida Grande", Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      justify-content: center;
+      line-height: 20px;
+      max-width: 480px;
+      min-height: 40px;
+      min-width: 0px;
+      overflow: hidden;
+      padding: 0px 20px;
+      text-align: center;
+      touch-action: manipulation;
+      transition: background-color 0.167s cubic-bezier(0.4, 0, 0.2, 1),
+                  box-shadow 0.167s cubic-bezier(0.4, 0, 0.2, 1),
+                  color 0.167s cubic-bezier(0.4, 0, 0.2, 1);
+      user-select: none;
+      -webkit-user-select: none;
+      vertical-align: middle;
+      margin: 0.5em;
+    }
+    .button-18:hover,
+    .button-18:focus { 
+      background-color: #16437E;
+      color: #ffffff;
+    }
+    .button-18:active {
+      background: #09223b;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    .button-18:disabled { 
+      cursor: not-allowed;
+      background: rgba(0, 0, 0, 0.08);
+      color: rgba(0, 0, 0, 0.3);
+    }
+    .tournament-bracket {
+      display: flex;
+      flex-direction: column;
+      transform: scale(0.8);
+      transform-origin: top center;
+    }
+    @media (min-width: 38em) {
+      .tournament-bracket { flex-direction: row; }
+    }
+    .tournament-bracket__round {
+      display: block;
+      margin-left: -3px;
+      flex: 1;
+    }
+    /* When RoundDescr is "R1", force left alignment */
+    .tournament-bracket__round.leftmost-round {
+      margin-left: 0 !important;
+    }
+    .tournament-bracket__round-title {
+      color: #9e9e9e;
+      font-size: 0.95rem;
+      font-weight: 400;
+      text-align: center;
+      font-style: italic;
+      margin-bottom: 0.5em;
+    }
+    .tournament-bracket__list {
+      display: flex;
+      flex-direction: column;
+      flex-flow: row wrap;
+      justify-content: center;
+      height: 100%;
+      min-height: 100%;
+      border-bottom: 1px dashed #e5e5e5;
+      padding-bottom: 2em;
+      margin-bottom: 2em;
+      transition: padding 0.2s ease-in-out, margin 0.2s ease-in-out;
+    }
+    @media (max-width: 24em) {
+      .tournament-bracket__list { padding-bottom: 1em; margin-bottom: 1em; }
+    }
+    @media (min-width: 38em) {
+      .tournament-bracket__list {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-right: 1px dashed #e5e5e5;
+        border-bottom: 0;
+      }
+    }
+    .tournament-bracket__round:last-child .tournament-bracket__list { border: 0; }
+    .tournament-bracket__item {
+      display: flex;
+      flex: 0 1 auto;
+      justify-content: center;
+      flex-direction: column;
+      align-items: flex-start;
+      position: relative;
+      padding: 2% 0;
+      width: 48%;
+      transition: padding 0.2s linear;
+    }
+    .tournament-bracket__item:nth-child(odd) { margin-right: 2%; }
+    .tournament-bracket__item:nth-child(even) { margin-left: 2%; }
+    .tournament-bracket__item::after { transition: width 0.2s linear; }
+    @media (max-width: 24em) {
+      .tournament-bracket__item { width: 100%; }
+      .tournament-bracket__item:nth-child(odd),
+      .tournament-bracket__item:nth-child(even) { margin-left: 0; margin-right: 0; }
+    }
+    @media (min-width: 38em) {
+      .tournament-bracket__item {
+        padding: 0.5em 1em;
+        width: 100%;
+      }
+      .tournament-bracket__item:nth-child(odd),
+      .tournament-bracket__item:nth-child(even) { margin: 0; }
+      .tournament-bracket__item::after {
+        position: absolute;
+        right: 0;
+        content: '';
+        display: block;
+        width: 1em;
+        height: 45%;
+        border-right: 2px solid #9e9e9e;
+        border-radius: 5px;
+      }
+      .tournament-bracket__item:nth-child(odd)::after {
+        top: 50%;
+        border-top: 2px solid #9e9e9e;
+        transform: translateY(-1px);
+      }
+      .tournament-bracket__item:nth-child(even)::after {
+        bottom: 50%;
+        border-bottom: 2px solid #9e9e9e;
+        transform: translateY(1px);
+      }
+      .tournament-bracket__round:first-child .tournament-bracket__item { padding-left: 0; }
+      .tournament-bracket__round:last-child .tournament-bracket__item { padding-right: 0; }
+      .tournament-bracket__round:last-child .tournament-bracket__item::after { display: none; }
+      .tournament-bracket__round:nth-last-child(2) .tournament-bracket__item::after {
+        border-radius: 0; border-right: 0;
+      }
+    }
+    @media (min-width: 72em) {
+      .tournament-bracket__item { padding: 0.5em 1.5em; }
+      .tournament-bracket__item::after { width: 1.5em; }
+    }
+    /* Modified match card styles for improved visibility */
+    .tournament-bracket__match {
+      display: flex;
+      width: 100%;
+      background-color: #ffffff;
+      padding: 1.5em;
+      border: 2px solid #0A66C2;
+      border-radius: 0.3em;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+      outline: none;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      position: relative;
+    }
+    .tournament-bracket__match:hover {
+      background-color: #f1f1f1;
+      transform: scale(1.02);
+      border-color: #16437E;
+      box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.3);
+    }
+    .tournament-bracket__content { display: flex; }
+    .tournament-bracket__content::after {
+      content: ':';
+      width: 1em;
+      text-align: center;
+      padding: 0.2em 0.1em;
+    }
+    @media (min-width: 38em) {
+      .tournament-bracket__content::after { order: 1; }
+    }
+    .tournament-bracket__content .tournament-bracket__team:first-child {
+      width: 50%;
+      order: 0;
+      text-align: right;
+    }
+    @media (min-width: 38em) and (max-width: 52em) {
+      .tournament-bracket__content .tournament-bracket__team:first-child { align-items: flex-end; }
+    }
+    .tournament-bracket__content .tournament-bracket__team:first-child .tournament-bracket__country {
+      order: 2;
+      justify-content: flex-end;
+    }
+    @media (min-width: 24em) {
+      .tournament-bracket__content .tournament-bracket__team:first-child .tournament-bracket__country { order: 0; }
+    }
+    @media (min-width: 38em) and (max-width: 52em) {
+      .tournament-bracket__content .tournament-bracket__team:first-child .tournament-bracket__country {
+        flex-direction: column-reverse;
+        align-items: flex-end;
+      }
+    }
+    .tournament-bracket__content .tournament-bracket__team:first-child .tournament-bracket__score { order: 0; }
+    @media (min-width: 24em) {
+      .tournament-bracket__content .tournament-bracket__team:first-child .tournament-bracket__score { order: 2; }
+    }
+    .tournament-bracket__content .tournament-bracket__team:last-child {
+      width: 50%;
+      order: 2;
+      text-align: left;
+    }
+    @media (min-width: 38em) and (max-width: 52em) {
+      .tournament-bracket__content .tournament-bracket__team:last-child { align-items: flex-start; }
+    }
+    @media (min-width: 38em) {
+      .tournament-bracket__content .tournament-bracket__team:last-child .tournament-bracket__country {
+        justify-content: flex-start;
+      }
+    }
+    @media (min-width: 38em) and (max-width: 52em) {
+      .tournament-bracket__content .tournament-bracket__team:last-child .tournament-bracket__country {
+        align-items: flex-start;
+      }
+    }
+    .tournament-bracket__content .tournament-bracket__team:last-child .tournament-bracket__code { order: 1; }
+    .tournament-bracket__table { width: 100%; }
+    .tournament-bracket__caption {
+      font-size: 0.8rem;
+      color: #BDBDBD;
+      font-weight: 300;
+      padding-bottom: 0.75em;
+    }
+    .tournament-bracket__team {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .tournament-bracket__country {
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      padding: 0.5em;
+    }
+    .team-logo {
+      width: 20px;
+      height: auto;
+      margin-right: 0.5em;
+      vertical-align: middle;
+    }
+    .tournament-bracket__score {
+      display: flex;
+      align-items: center;
+      padding: 0.5em;
+      font-weight: bold;
+      white-space: nowrap;
+      justify-content: center;
+    }
+    .tournament-bracket__number {
+      display: inline-block;
+      padding: 0.3em 0.6em;
+      border: 1px solid #fad674;
+      background-color: #FFF176;
+      font-size: 1rem;
+      border-radius: 0.3em;
+      min-width: 2em;
+      text-align: center;
+      margin: 0 0.2em;
+    }
+    .tournament-bracket__team--winner .tournament-bracket__number {
+      font-weight: bold;
+    }
+    .seed-badge {
+      background-color: #0A66C2;
+      color: #fff;
+      border-radius: 50%;
+      padding: 4px 8px;
+      font-size: 0.8rem;
+      margin-right: 6px;
+    }
+    .tournament-draw { margin-bottom: 3em; }
+    .draw-header {
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-bottom: 1em;
+    }
+    #division-controls {
+      text-align: center;
+      margin: 1em 0;
+    }
+    #divisionDropdown {
+      padding: 0.5em;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-family: 'Work Sans', sans-serif;
+      margin-left: 0.5em;
+      background: white;
+      font-size: 1rem;
+    }
+    #selectedDivisionName {
+      font-weight: 600;
+      color: #0A66C2;
+    }
+        /* New styles for the US flag and player rating */
+        .flag-icon {
+      width: 20px;
+      height: auto;
+      margin-right: 0.3em;
+      vertical-align: middle;
+    }
+    .player-rating {
+      font-size: 0.9rem;
+      color: #555;
+      margin-left: 0.3em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Tournament Draws</h1>
+    <div id="division-controls">
+      <label for="divisionDropdown">Select Division:</label>
+      <select id="divisionDropdown"></select>
+    </div>
+    <h2>Division: <span id="selectedDivisionName">Loading...</span></h2>
+    <div id="draw-buttons"></div>
+    <div id="draws-container"></div>
+  </div>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const tournamentID = urlParams.get('TournamentID') || "16387";
+
+    function populateDivisionDropdown(divisions) {
+      const dropdown = document.getElementById("divisionDropdown");
+      dropdown.innerHTML = divisions.map(division => 
+        `<option value="${division.id}">${division.name}</option>`
+      ).join('');
+      if (divisions.length > 0) {
+        updateDivisionDisplay(divisions[0].name);
+      }
+    }
+        // Helper function to format ratings
+    function formatRating(rating) {
+      const num = Number(rating);
+      if (isNaN(num)) return "";
+      if (num % 1 === 0) return num.toFixed(0);
+      else if ((num * 10) % 1 === 0) return num.toFixed(1);
+      else return num.toFixed(2);
+    }
+
+
+    function updateDivisionDisplay(divisionName) {
+      document.getElementById("selectedDivisionName").textContent = divisionName;
+    }
+
+    function fetchDivisions() {
+      const url = `https://api.ussquash.com/resources/tournaments/${tournamentID}/divisions`;
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          populateDivisionDropdown(data);
+          if (data.length > 0) {
+            fetchDraws(data[0].id);
+          }
+        })
+        .catch(error => console.error("Error fetching divisions:", error));
+    }
+
+    function fetchDraws(divisionID) {
+      const url = `https://api.ussquash.com/resources/tournaments/${tournamentID}/division/${divisionID}/draws`;
+      fetch(url)
+        .then(response => response.json())
+        .then(renderDraws)
+        .catch(error => console.error("Error fetching draws:", error));
+    }
+
+    document.getElementById("divisionDropdown").addEventListener("change", function() {
+      const divisionID = this.value;
+      const divisionName = this.options[this.selectedIndex].text;
+      updateDivisionDisplay(divisionName);
+      fetchDraws(divisionID);
+    });
+
+    function renderDraws(drawsData) {
+      const container = document.getElementById("draws-container");
+      const buttonsContainer = document.getElementById("draw-buttons");
+      container.innerHTML = "";
+      buttonsContainer.innerHTML = "";
+      drawsData.forEach((draw, index) => {
+        const btn = document.createElement("button");
+        btn.className = "button-18";
+        btn.innerHTML = "<span>" + draw.sectionName + "</span>";
+        btn.value = index;
+        btn.addEventListener("click", function() {
+          document.querySelectorAll("#draw-buttons button").forEach(b => b.classList.remove("active"));
+          this.classList.add("active");
+          showDraw(this.value);
+        });
+        buttonsContainer.appendChild(btn);
+        const drawElement = renderDraw(draw, index);
+        drawElement.style.display = "none";
+        container.appendChild(drawElement);
+      });
+      if (buttonsContainer.firstChild) {
+        buttonsContainer.firstChild.classList.add("active");
+      }
+      showDraw(0);
+    }
+
+    function renderDraw(draw, index) {
+  const drawContainer = document.createElement("div");
+  drawContainer.className = "tournament-draw";
+  drawContainer.dataset.drawIndex = index;
+  
+  const header = document.createElement("div");
+  header.className = "draw-header";
+  header.textContent = draw.divisionName + " - " + draw.sectionName;
+  drawContainer.appendChild(header);
+  
+  const rounds = {};
+  draw.matches.forEach(match => {
+    const key = match.RoundCode;
+    if (!rounds[key]) {
+      rounds[key] = {
+        label: match.RoundDescr,
+        matches: []
+      };
+    }
+    rounds[key].matches.push(match);
+  });
+  
+  // Do not sort by round number—keep the original insertion order.
+  const roundsArray = Object.values(rounds);
+  
+  const bracketDiv = document.createElement("div");
+  bracketDiv.className = "tournament-bracket";
+  roundsArray.forEach(round => {
+    bracketDiv.appendChild(renderRound(round.label, round.matches));
+  });
+  drawContainer.appendChild(bracketDiv);
+  
+  return drawContainer;
+}
+
+    function renderRound(roundLabel, matches) {
+      const roundDiv = document.createElement("div");
+      roundDiv.className = "tournament-bracket__round";
+      const roundTitle = document.createElement("h3");
+      roundTitle.className = "tournament-bracket__round-title";
+      roundTitle.textContent = roundLabel;
+      roundDiv.appendChild(roundTitle);
+      const ul = document.createElement("ul");
+      ul.className = "tournament-bracket__list";
+      matches.forEach(match => {
+        const li = document.createElement("li");
+        li.className = "tournament-bracket__item";
+        li.appendChild(createMatchElement(match));
+        ul.appendChild(li);
+      });
+      roundDiv.appendChild(ul);
+      return roundDiv;
+    }
+
+    function formatTeam(teamStr, opponentStr) {
+      if (teamStr && teamStr.trim() !== "") {
+        return teamStr.split("| |")[0].trim();
+      } else {
+        if (opponentStr && opponentStr.trim() !== "") {
+          return "BYE";
+        } else {
+          return "";
+        }
+      }
+    }
+
+    function createMatchElement(match) {
+      const hasScore = match.Score && match.Score.trim() !== "";
+      const homeWinner = hasScore ? (match.winner === "H") : false;
+      const visitorWinner = hasScore ? (match.winner === "V") : false;
+      
+      const matchDiv = document.createElement("div");
+      matchDiv.className = "tournament-bracket__match";
+      matchDiv.tabIndex = 0;
+      
+      const table = document.createElement("table");
+      table.className = "tournament-bracket__table";
+      
+      const caption = document.createElement("caption");
+      caption.className = "tournament-bracket__caption";
+      caption.textContent = match.matchdate + " " + (match.StartTime || "");
+      table.appendChild(caption);
+      
+      const tbody = document.createElement("tbody");
+      
+      const trScore = document.createElement("tr");
+      const tdScore = document.createElement("td");
+      tdScore.colSpan = 1;
+      tdScore.className = "tournament-bracket__score";
+      if (match.Status == "DF") {
+        const scoreSpan = document.createElement("span");
+          scoreSpan.className = "tournament-bracket__number";
+          scoreSpan.textContent = "Default";
+          tdScore.appendChild(scoreSpan);
+          
+      } else if (hasScore) {
+        const gameScores = match.Score.split(",");
+        gameScores.forEach((score, index) => {
+          const scoreSpan = document.createElement("span");
+          scoreSpan.className = "tournament-bracket__number";
+          scoreSpan.textContent = score.trim();
+          tdScore.appendChild(scoreSpan);
+          if (index < gameScores.length - 1) {
+            tdScore.appendChild(document.createTextNode(" "));
+          }
+        });
+      } else {
+        tdScore.textContent = "";
+      }
+      trScore.appendChild(tdScore);
+      tbody.appendChild(trScore);
+      
+     // Home team row
+     const trHome = document.createElement("tr");
+      const tdHome = document.createElement("td");
+      tdHome.className = "tournament-bracket__country";
+      if (match.wid1LogoImageUrl && match.wid1LogoImageUrl.trim() !== "") {
+        const img = document.createElement("img");
+        img.src = match.wid1LogoImageUrl;
+        img.alt = formatTeam(match.hplayer1, match.vplayer1) + " Logo";
+        img.className = "team-logo";
+        tdHome.appendChild(img);
+      }
+      if(match.hseed) {
+        const homeSeed = document.createElement("span");
+        homeSeed.className = "seed-badge";
+        homeSeed.textContent = match.hseed;
+        tdHome.appendChild(homeSeed);
+      }
+      const homeName = formatTeam(match.hplayer1, match.vplayer1);
+      // Add flag only if a valid player name exists and it's not "BYE"
+      if (homeName && homeName !== "BYE") {
+        const flagImgHome = document.createElement("img");
+        flagImgHome.src = "https://s3.amazonaws.com/draws.ussquash.com/img/flags/us.gif";
+        flagImgHome.alt = "US Flag";
+        flagImgHome.className = "flag-icon";
+        tdHome.appendChild(flagImgHome);
+      }
+      
+      // Home player name
+      const spanHomeName = document.createElement("span");
+      spanHomeName.className = "player-name";
+      spanHomeName.textContent = formatTeam(match.hplayer1, match.vplayer1);
+      if(homeWinner) { spanHomeName.style.fontWeight = "bold"; }
+      tdHome.appendChild(spanHomeName);
+      
+      // Placeholder for home rating; will be updated once the API call returns
+      const spanHomeRating = document.createElement("span");
+      spanHomeRating.className = "player-rating";
+      spanHomeRating.textContent = " (loading...)";
+      tdHome.appendChild(spanHomeRating);
+      
+      trHome.appendChild(tdHome);
+      tbody.appendChild(trHome);
+      
+      // Visitor team row
+      const trVisitor = document.createElement("tr");
+      const tdVisitor = document.createElement("td");
+      tdVisitor.className = "tournament-bracket__country";
+      if (match.oid1LogoImageUrl && match.oid1LogoImageUrl.trim() !== "") {
+        const img = document.createElement("img");
+        img.src = match.oid1LogoImageUrl;
+        img.alt = formatTeam(match.vplayer1, match.hplayer1) + " Logo";
+        img.className = "team-logo";
+        tdVisitor.appendChild(img);
+      }
+      if(match.vseed) {
+        const visitorSeed = document.createElement("span");
+        visitorSeed.className = "seed-badge";
+        visitorSeed.textContent = match.vseed;
+        tdVisitor.appendChild(visitorSeed);
+      }
+      const visitorName = formatTeam(match.vplayer1, match.hplayer1);
+      // Add flag only if a valid visitor name exists and it's not "BYE"
+      if (visitorName && visitorName !== "BYE") {
+        const flagImgVisitor = document.createElement("img");
+        flagImgVisitor.src = "https://s3.amazonaws.com/draws.ussquash.com/img/flags/us.gif";
+        flagImgVisitor.alt = "US Flag";
+        flagImgVisitor.className = "flag-icon";
+        tdVisitor.appendChild(flagImgVisitor);
+      }
+      
+      // Visitor player name
+      const spanVisitorName = document.createElement("span");
+      spanVisitorName.className = "player-name";
+      spanVisitorName.textContent = formatTeam(match.vplayer1, match.hplayer1);
+      if(visitorWinner) { spanVisitorName.style.fontWeight = "bold"; }
+      tdVisitor.appendChild(spanVisitorName);
+      
+      // Placeholder for visitor rating
+      const spanVisitorRating = document.createElement("span");
+      spanVisitorRating.className = "player-rating";
+      spanVisitorRating.textContent = " (loading...)";
+      tdVisitor.appendChild(spanVisitorRating);
+      
+      trVisitor.appendChild(tdVisitor);
+      tbody.appendChild(trVisitor);
+      
+      table.appendChild(tbody);
+      matchDiv.appendChild(table);
+    
+      // If the match has a ResultID, fetch ratings from the ratings API
+      if(match.ResultID) {
+        fetch(`https://api.ussquash.com/resources/tournaments/matches/${match.ResultID}`)
+          .then(response => response.json())
+          .then(data => {
+            // Assuming the response contains hRating and vRating for home and visitor respectively.
+            if(data.hPlayer1Rating) {
+              spanHomeRating.textContent = "  (" + formatRating(data.hPlayer1Rating) + ")";
+            } else {
+              spanHomeRating.textContent = "";
+            }
+            if(data.vPlayer1Rating) {
+              spanVisitorRating.textContent = "  (" + formatRating(data.vPlayer1Rating) + ")";
+            } else {
+              spanVisitorRating.textContent = "";
+            }
+          })
+          .catch(error => {
+            console.error("Error fetching match ratings:", error);
+            spanHomeRating.textContent = "";
+            spanVisitorRating.textContent = "";
+          });
+      } else {
+        spanHomeRating.textContent = "";
+        spanVisitorRating.textContent = "";
+      }
+      
+      return matchDiv;
+    }
+    
+
+    function showDraw(index) {
+      const draws = document.querySelectorAll(".tournament-draw");
+      draws.forEach(draw => {
+        draw.style.display = (draw.dataset.drawIndex === index.toString()) ? "block" : "none";
+      });
+    }
+
+    fetchDivisions();
+  </script>
+</body>
+</html>

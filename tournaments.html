@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Squash Tournaments Calendar</title>
+    <style>
+      /* Base Styles */
+      body {
+        margin: 0;
+        font-family: "Roboto", sans-serif;
+        background-image: url("/static/csabackground.png");
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+      .event-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 1em;
+      }
+      .event-container h3.year {
+        font-size: 40px;
+        text-align: center;
+        border-bottom: 1px solid #b1b1b1;
+        margin-bottom: 20px;
+      }
+      .filter-container {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .filter-container label {
+        font-size: 18px;
+        margin-right: 10px;
+      }
+      /* Tournament Event Styles */
+      .event {
+        box-shadow: 0 4px 16px -8px rgba(0,0,0,0.4);
+        display: flex;
+        border-radius: 8px;
+        margin: 32px 0;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+      .event:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      }
+      .event .event-left {
+        background: #222;
+        min-width: 82px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #eee;
+        padding: 8px 48px;
+        font-weight: bold;
+        text-align: center;
+        border-radius: 8px 0 0 8px;
+      }
+      .event .event-left .date {
+        font-size: 56px;
+        margin: 0;
+      }
+      .event .event-left .month {
+        font-size: 16px;
+        font-weight: normal;
+      }
+      .event .event-right {
+        display: flex;
+        align-items: center;
+        padding: 0 24px;
+      }
+      .event .event-right .tournament-logo {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 50%;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        margin-right: 20px;
+      }
+      .event .event-right .event-details {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .event .event-right h3.event-title {
+        font-size: 24px;
+        margin: 0 0 10px;
+        color: #218bbb;
+        text-transform: uppercase;
+      }
+      .event .event-right .event-description {
+        font-size: 16px;
+        margin: 0;
+        color: #333;
+      }
+      /* Responsive */
+      @media (max-width: 550px) {
+        .event {
+          flex-direction: column;
+        }
+        .event .event-left {
+          padding: 0;
+          border-radius: 8px 8px 0 0;
+        }
+        .event .event-right {
+          flex-direction: column;
+          align-items: flex-start;
+          padding: 16px;
+        }
+        .event .event-right .tournament-logo {
+          margin-right: 0;
+          margin-bottom: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="event-container">
+      <h3 class="year">Squash Tournaments</h3>
+      <div class="filter-container">
+        <label for="filterSelect">Filter:</label>
+        <select id="filterSelect">
+          <option value="all">All Tournaments</option>
+          <option value="team">Team Tournaments</option>
+        </select>
+      </div>
+      <div id="tournamentsList">
+        <!-- Tournaments will be injected here -->
+      </div>
+    </div>
+    <script>
+      const apiURL = "https://api.ussquash.com/resources/tournaments?TopRecords=50&ngbId=10000&OrganizerType=1&Sanctioned=1&Status=1&State=0";
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      let tournamentsData = [];
+
+      function getLogo(tournament) {
+        return tournament.OrganizerLogoUrl || tournament.LogoImageUrl || "https://via.placeholder.com/80";
+      }
+      
+      function createEvent(tournament) {
+        // Parse the start date details
+        let [sMonth, sDay] = tournament.StartDate.split("-").map(Number);
+        const day = sDay;
+        const month = months[sMonth - 1];
+        const eventDiv = document.createElement("div");
+        eventDiv.className = "event";
+        
+        const eventLeft = document.createElement("div");
+        eventLeft.className = "event-left";
+        eventLeft.innerHTML = `
+          <div class="event-date">
+            <div class="date">${day}</div>
+            <div class="month">${month}</div>
+          </div>`;
+        eventDiv.appendChild(eventLeft);
+        
+        const eventRight = document.createElement("div");
+        eventRight.className = "event-right";
+        const logoImg = document.createElement("img");
+        logoImg.className = "tournament-logo";
+        logoImg.src = getLogo(tournament);
+        logoImg.alt = "Tournament Logo";
+        eventRight.appendChild(logoImg);
+        
+        const eventDetails = document.createElement("div");
+        eventDetails.className = "event-details";
+        const title = document.createElement("h3");
+        title.className = "event-title";
+        title.textContent = tournament.TournamentName || "Untitled Tournament";
+        eventDetails.appendChild(title);
+        
+        const description = document.createElement("div");
+        description.className = "event-description";
+        description.textContent = `Location: ${tournament.SiteCity || "N/A"} | Total on Draw: ${tournament.PlayersOnDraw || 0} | Type: ${tournament.EventTypeCode || "N/A"}`;
+        eventDetails.appendChild(description);
+        
+        eventRight.appendChild(eventDetails);
+        eventDiv.appendChild(eventRight);
+        
+        const eventTypeCode = (tournament.EventTypeCode && tournament.EventTypeCode !== "N/A")
+          ? encodeURIComponent(tournament.EventTypeCode)
+          : "16";
+        
+        const link = document.createElement("a");
+        // Conditional navigation based on IsTeamTournament
+        if (tournament.IsTeamTournament === true || String(tournament.IsTeamTournament) === "true") {
+          link.href = `/teamtournament?TournamentID=${tournament.TournamentID}&EventTypeCode=${eventTypeCode}`;
+        } else {
+          link.href = `/singlestournament?TournamentID=${tournament.TournamentID}&EventTypeCode=${eventTypeCode}`;
+        }
+        link.appendChild(eventDiv);
+        return link;
+      }
+      
+      function renderTournaments(filterValue) {
+        const tournamentsList = document.getElementById("tournamentsList");
+        tournamentsList.innerHTML = "";
+        tournamentsData.forEach(tournament => {
+          // When filtering for team tournaments, show only tournaments with IsTeamTournament true
+          if (filterValue === "team" && (tournament.IsTeamTournament !== true && String(tournament.IsTeamTournament) !== "true")) {
+            return;
+          }
+          const eventElement = createEvent(tournament);
+          tournamentsList.appendChild(eventElement);
+        });
+      }
+      
+      // First fetch the list, then for each tournament fetch detailed info
+      fetch(apiURL)
+        .then(response => response.json())
+        .then(data => {
+          // data is the initial tournaments list
+          return Promise.all(data.map(tournament => {
+            return fetch(`https://api.ussquash.com/resources/tournaments/${tournament.TournamentID}`)
+              .then(response => response.json())
+              .then(details => {
+                // Merge the detailed info (which includes IsTeamTournament) into the tournament object
+                return { ...tournament, ...details };
+              })
+              .catch(error => {
+                console.error("Error fetching details for tournament", tournament.TournamentID, error);
+                // Fallback to original tournament object if details fetch fails
+                return tournament;
+              });
+          }));
+        })
+        .then(fullData => {
+          tournamentsData = fullData;
+          // Render tournaments using the current filter
+          renderTournaments(document.getElementById("filterSelect").value);
+        })
+        .catch(error => {
+          console.error("Error fetching tournaments:", error);
+          document.getElementById("tournamentsList").innerHTML = "<p>Error loading tournaments data.</p>";
+        });
+      
+      // Listen for changes in the filter dropdown
+      document.getElementById("filterSelect").addEventListener("change", function() {
+        renderTournaments(this.value);
+      });
+    </script>
+  </body>
+</html>
