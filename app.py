@@ -17,18 +17,16 @@ COOKIES = {
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-@app.route("/proxy/liveScoreDetails")
-def proxy_live_score_details():
-    # Get the match_id from the query parameter (or use default)
-    match_id = request.args.get("match_id", DEFAULT_MATCH_ID)
-    # Build the API URL dynamically based on match_id
-    api_url = f"https://api.ussquash.com/resources/res/matches/{match_id}/liveScoreDetails"
-    logger.info("Fetching data from API URL: %s", api_url)
+# Dynamic endpoints using a user_id parameter
+
+@app.route("/proxy/user/<int:user_id>/schools")
+def proxy_user_schools(user_id):
+    api_url = f"https://api.ussquash.com/resources/res/user/{user_id}/schools"
+    logger.info("Fetching schools from: %s", api_url)
     try:
         response = requests.get(api_url, cookies=COOKIES, timeout=10)
-        response.raise_for_status()  # Raise an exception for HTTP errors
-        data = response.json()
-        return jsonify(data)
+        response.raise_for_status()
+        return jsonify(response.json())
     except requests.exceptions.HTTPError as http_err:
         logger.error("HTTP error occurred: %s", http_err)
         return jsonify({"error": f"HTTP error: {http_err}"}), response.status_code
@@ -36,8 +34,119 @@ def proxy_live_score_details():
         logger.error("Error fetching API data: %s", req_err)
         return jsonify({"error": "Error fetching API data."}), 500
     except Exception as e:
-        logger.error("An unexpected error occurred: %s", e)
+        logger.error("Unexpected error: %s", e)
+        return jsonify({"error": "An unexpected error occurred."}), 500
+
+@app.route("/proxy/user/<int:user_id>/record")
+def proxy_user_record(user_id):
+    """Fetch the user record for the given user."""
+    api_url = f"https://api.ussquash.com/resources/res/user/{user_id}/record"
+    logger.info("Fetching user record from: %s", api_url)
+    try:
+        response = requests.get(api_url, cookies=COOKIES, timeout=10)
+        response.raise_for_status()
+        return jsonify(response.json())
+    except requests.exceptions.HTTPError as http_err:
+        logger.error("HTTP error: %s", http_err)
+        return jsonify({"error": f"HTTP error: {http_err}"}), response.status_code
+    except requests.exceptions.RequestException as req_err:
+        logger.error("Request error: %s", req_err)
+        return jsonify({"error": "Error fetching API data."}), 500
+    except Exception as e:
+        logger.error("Unexpected error: %s", e)
         return jsonify({"error": "An unexpected error occurred while processing your request."}), 500
+
+@app.route("/proxy/liveScoreDetails")
+def proxy_live_score_details():
+    # The match_id now can be passed dynamically
+    match_id = request.args.get("match_id", DEFAULT_MATCH_ID)
+    api_url = f"https://api.ussquash.com/resources/res/matches/{match_id}/liveScoreDetails"
+    logger.info("Fetching live score details from: %s", api_url)
+    try:
+        response = requests.get(api_url, cookies=COOKIES, timeout=10)
+        response.raise_for_status()
+        return jsonify(response.json())
+    except requests.exceptions.HTTPError as http_err:
+        logger.error("HTTP error: %s", http_err)
+        return jsonify({"error": f"HTTP error: {http_err}"}), response.status_code
+    except requests.exceptions.RequestException as req_err:
+        logger.error("Request error: %s", req_err)
+        return jsonify({"error": "Error fetching API data."}), 500
+    except Exception as e:
+        logger.error("Unexpected error: %s", e)
+        return jsonify({"error": "An unexpected error occurred while processing your request."}), 500
+
+@app.route("/proxy/user/<int:user_id>")
+def proxy_user_profile(user_id):
+    api_url = f"https://api.ussquash.com/resources/res/user/{user_id}"
+    logger.info("Fetching user profile from: %s", api_url)
+    try:
+        response = requests.get(api_url, cookies=COOKIES, timeout=10)
+        response.raise_for_status()
+        return jsonify(response.json())
+    except requests.exceptions.HTTPError as http_err:
+        logger.error("HTTP error: %s", http_err)
+        return jsonify({"error": f"HTTP error: {http_err}"}), response.status_code
+    except requests.exceptions.RequestException as req_err:
+        logger.error("Request error: %s", req_err)
+        return jsonify({"error": "Error fetching API data."}), 500
+    except Exception as e:
+        logger.error("Unexpected error: %s", e)
+        return jsonify({"error": "An unexpected error occurred."}), 500
+
+@app.route("/proxy/user/<int:user_id>/ratings-top")
+def proxy_user_ratings_top(user_id):
+    api_url = f"https://api.ussquash.com/resources/res/user/{user_id}/ratings-top"
+    logger.info("Fetching highest rating from: %s", api_url)
+    try:
+        response = requests.get(api_url, cookies=COOKIES, timeout=10)
+        response.raise_for_status()
+        return jsonify(response.json())
+    except requests.exceptions.HTTPError as http_err:
+        logger.error("HTTP error: %s", http_err)
+        return jsonify({"error": f"HTTP error: {http_err}"}), response.status_code
+    except requests.exceptions.RequestException as req_err:
+        logger.error("Request error: %s", req_err)
+        return jsonify({"error": "Error fetching API data."}), 500
+    except Exception as e:
+        logger.error("Unexpected error: %s", e)
+        return jsonify({"error": "An unexpected error occurred."}), 500
+
+@app.route("/proxy/user/<int:user_id>/ratings")
+def proxy_user_ratings(user_id):
+    api_url = f"https://api.ussquash.com/resources/res/user/{user_id}/ratings"
+    logger.info("Fetching current rating from: %s", api_url)
+    try:
+        response = requests.get(api_url, cookies=COOKIES, timeout=10)
+        response.raise_for_status()
+        return jsonify(response.json())
+    except requests.exceptions.HTTPError as http_err:
+        logger.error("HTTP error: %s", http_err)
+        return jsonify({"error": f"HTTP error: {http_err}"}), response.status_code
+    except requests.exceptions.RequestException as req_err:
+        logger.error("Request error: %s", req_err)
+        return jsonify({"error": "Error fetching API data."}), 500
+    except Exception as e:
+        logger.error("Unexpected error: %s", e)
+        return jsonify({"error": "An unexpected error occurred."}), 500
+
+@app.route("/proxy/user/<int:user_id>/ratings_history")
+def proxy_user_ratings_history(user_id):
+    api_url = f"https://api.ussquash.com/resources/res/user/{user_id}/ratings_history"
+    logger.info("Fetching ratings history from: %s", api_url)
+    try:
+        response = requests.get(api_url, cookies=COOKIES, timeout=10)
+        response.raise_for_status()
+        return jsonify(response.json())
+    except requests.exceptions.HTTPError as http_err:
+        logger.error("HTTP error: %s", http_err)
+        return jsonify({"error": f"HTTP error: {http_err}"}), response.status_code
+    except requests.exceptions.RequestException as req_err:
+        logger.error("Request error: %s", req_err)
+        return jsonify({"error": "Error fetching API data."}), 500
+    except Exception as e:
+        logger.error("Unexpected error: %s", e)
+        return jsonify({"error": "An unexpected error occurred."}), 500
 
 @app.route("/schedule", methods=["GET", "POST"])
 def schedule():
@@ -51,7 +160,20 @@ def schedule():
         except Exception as e:
             logger.error("Template rendering error: %s", e)
             return jsonify({"error": "Template not found or rendering error."}), 500
-        
+
+@app.route("/users", methods=["GET", "POST"])
+def users():
+    if request.method == "POST":
+        match_id = request.form.get("match_id", DEFAULT_MATCH_ID)
+        return redirect(url_for("schedule", match_id=match_id))
+    else:
+        match_id = request.args.get("match_id", DEFAULT_MATCH_ID)
+        try:
+            return render_template("users.html", match_id=match_id)
+        except Exception as e:
+            logger.error("Template rendering error: %s", e)
+            return jsonify({"error": "Template not found or rendering error."}), 500
+
 @app.route("/allteamsschedule", methods=["GET", "POST"])
 def schedule2():
     if request.method == "POST":
@@ -64,6 +186,82 @@ def schedule2():
         except Exception as e:
             logger.error("Template rendering error: %s", e)
             return jsonify({"error": "Template not found or rendering error."}), 500
+
+@app.route("/proxy/user/<int:user_id>/rankings")
+def proxy_user_rankings(user_id):
+    api_url = f"https://api.ussquash.com/resources/res/user/{user_id}/rankings?history=yes"
+    logger.info("Fetching user rankings from: %s", api_url)
+    try:
+        response = requests.get(api_url, cookies=COOKIES, timeout=10)
+        response.raise_for_status()
+        return jsonify(response.json())
+    except requests.exceptions.HTTPError as http_err:
+        logger.error("HTTP error: %s", http_err)
+        return jsonify({"error": f"HTTP error: {http_err}"}), response.status_code
+    except requests.exceptions.RequestException as req_err:
+        logger.error("Request error: %s", req_err)
+        return jsonify({"error": "Error fetching API data."}), 500
+    except Exception as e:
+        logger.error("Unexpected error: %s", e)
+        return jsonify({"error": "An unexpected error occurred."}), 500
+
+@app.route("/proxy/players/<int:user_id>/leagues")
+def proxy_player_leagues(user_id):
+    api_url = f"https://api.ussquash.com/resources/res/players/{user_id}/leagues"
+    logger.info("Fetching player leagues from: %s", api_url)
+    try:
+        response = requests.get(api_url, cookies=COOKIES, timeout=10)
+        response.raise_for_status()
+        return jsonify(response.json())
+    except requests.exceptions.HTTPError as http_err:
+        logger.error("HTTP error: %s", http_err)
+        return jsonify({"error": f"HTTP error: {http_err}"}), response.status_code
+    except requests.exceptions.RequestException as req_err:
+        logger.error("Request error: %s", req_err)
+        return jsonify({"error": "Error fetching API data."}), 500
+    except Exception as e:
+        logger.error("Unexpected error: %s", e)
+        return jsonify({"error": "An unexpected error occurred."}), 500
+
+@app.route("/proxy/user/<int:user_id>/affiliations")
+def proxy_user_affiliations(user_id):
+    api_url = f"https://api.ussquash.com/resources/res/user/{user_id}/affiliations"
+    logger.info("Fetching user affiliations from: %s", api_url)
+    try:
+        response = requests.get(api_url, cookies=COOKIES, timeout=10)
+        response.raise_for_status()
+        return jsonify(response.json())
+    except requests.exceptions.HTTPError as http_err:
+        logger.error("HTTP error: %s", http_err)
+        return jsonify({"error": f"HTTP error: {http_err}"}), response.status_code
+    except requests.exceptions.RequestException as req_err:
+        logger.error("Request error: %s", req_err)
+        return jsonify({"error": "Error fetching API data."}), 500
+    except Exception as e:
+        logger.error("Unexpected error: %s", e)
+        return jsonify({"error": "An unexpected error occurred."}), 500
+
+@app.route("/proxy/search")
+def proxy_search():
+    query = request.args.get("q")
+    if not query:
+        return jsonify({"error": "Missing query parameter"}), 400
+    encoded_query = query.replace(" ", "%20")
+    api_url = f"https://api.ussquash.com/resources/res/search/{encoded_query}"
+    logger.info("Fetching search results from: %s", api_url)
+    try:
+        response = requests.get(api_url, cookies=COOKIES, timeout=10)
+        response.raise_for_status()
+        return jsonify(response.json())
+    except requests.exceptions.HTTPError as http_err:
+        logger.error("HTTP error: %s", http_err)
+        return jsonify({"error": f"HTTP error: {http_err}"}), response.status_code
+    except requests.exceptions.RequestException as req_err:
+        logger.error("Request error: %s", req_err)
+        return jsonify({"error": "Error fetching API data."}), 500
+    except Exception as e:
+        logger.error("Unexpected error: %s", e)
+        return jsonify({"error": "An unexpected error occurred."}), 500
 
 @app.route("/compare")
 def compare():
@@ -87,7 +285,6 @@ def standings():
 
 @app.route("/teamtournament")
 def teamtournament():
-    # This route serves teamtournament.html and will include any query parameters.
     return send_from_directory(os.getcwd(), "teamtournament.html")
 
 @app.route("/tournaments")
