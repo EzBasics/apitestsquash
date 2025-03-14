@@ -3,9 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Squash Match Scoreboard</title>
+    <title>CCSquash - Live</title>
+    <script src="https://embed.twitch.tv/embed/v1.js"></script>
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/ccsquash.jpg"/>
     <style>
-        /* Navbar Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: verdana;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 100px;
+            min-height: 100vh;
+        }
+
+        /* Background image */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-image: url("/static/court.png");
+            opacity: 0.7;
+            z-index: -1;
+        }
+
         .navbar {
             display: flex;
             align-items: center;
@@ -13,8 +44,8 @@
             background: #fff;
             padding: 12px 40px;
             border-radius: 12px;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
-            width: 60%;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            width: 80%;
             position: fixed;
             top: 15px;
             left: 50%;
@@ -23,7 +54,7 @@
         }
 
         .nav-container {
-            display: flex; 
+            display: flex;
             flex: 0.7;
         }
 
@@ -56,119 +87,212 @@
             text-decoration: none;
         }
 
-        .nav-links li a:before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 3px;
-            width: 0%;
-            background: #007BFF;
-            border-radius: 12px;
-            transition: all 0.4s ease;
-        }
-
-        .nav-links li a:hover:before {
-            width: 100%;
-        }
-
         .logo {
-            flex: 0.15;
             display: flex;
             justify-content: center;
             align-items: center;
+            flex: 0.15;
             transform: scale(1.3);
         }
 
         .logo img {
             width: 50px;
+            height: auto;
             transition: transform 0.3s ease;
         }
 
-        /* Scoreboard Container Styles */
-        #scoreboard-container {
-            width: 100%;
-            height: calc(100vh - 100px);
-            margin-top: 100px;
-            position: relative;
-        }
-
-        .loading-message {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #333;
-            font-family: Arial, sans-serif;
-            font-size: 1.2rem;
-        }
-
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: transparent;
-        }
-
-        body {
-            background: #f4f7fa;
-            overflow: hidden;
+        .logo img:hover {
+            transform: scale(1.8);
         }
 
         @media (max-width: 768px) {
-            .navbar { 
-                width: 90%; 
-                padding: 15px 20px; 
+            body {
+                padding-top: 120px;
             }
+            h1 {
+                font-size: 2rem;
+            }
+            #twitch-embed {
+                max-width: 100%;
+            }
+        }
+
+        /* Stream cards */
+        .stream-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            padding: 5px;
+            width: 100%;
+            max-width: 960px;
+            text-align: center;
+        }
+
+        .stream-cards.side-by-side {
+            flex-direction: row; /* Makes streams appear side by side */
+            justify-content: space-between; /* Space out the cards */
+        }
+
+        .stream-cards.side-by-side .court-title {
+            margin-bottom: 10px; /* Add space between title and stream */
+        }
+
+
+        .stream-card {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 500px;
+            min-height: 220px;
+            width: 100%;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Adjust width when side by side */
+        .stream-cards.side-by-side .stream-card {
+            width: 30%; /* Set each stream card to take 30% of the container width */
+        }
+
+        .stream-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            background-color: rgba(43, 137, 245, 0.6);
+        }
+
+        .container {
+            margin-top: 50px;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 960px;
+            text-align: center;
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+
+        .container::-webkit-scrollbar {
+            display: none;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-top: 25px;
+        }
+
+        /* Button styling */
+        .toggle-button {
+            background-color: #007BFF;
+            color: white;
+            font-size: 1.2rem;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease;
+            border: none;
+        }
+
+        .toggle-button:hover {
+            background-color: #0056b3;
+        }
+
+        .toggle-button:focus {
+            outline: none;
         }
     </style>
 </head>
 <body>
-    <!-- Navigation Bar -->
-    <div class="navbar">
-        <div class="nav-container left">
-            <ul class="nav-links">
-                <li><a href="/">Roster</a></li>
-                <li><a href="standings">Standings</a></li>
-                <li><a href="compare">Compare</a></li>
-            </ul>
-        </div>
-        <div class="logo">
-            <a><img src="{{ url_for('static', filename='logo.png') }}" alt="Logo"></a>
-        </div>
-        <div class="nav-container right">
-            <ul class="nav-links">
-                <li><a href="live">Live</a></li>
-                <li><a href="schedule">Schedule</a></li>
-                <li><a href="allteamsschedule">Matches</a></li>
-            </ul>
-        </div>
+  <!-- Navigation -->
+  <div class="navbar">
+    <div class="nav-container left">
+      <ul class="nav-links">
+        <li><a href="/">Roster</a></li>
+        <li><a href="standings">Standings</a></li>
+        <li><a href="compare">Compare</a></li>
+        <li><a href="users">Players</a></li>
+      </ul>
     </div>
+    <div class="logo">
+      <a><img src="/static/logo.png" alt="Logo"></a>
+    </div>
+    <div class="nav-container right">
+      <ul class="nav-links">
+        <li><a href="live">Live</a></li>
+        <li><a href="schedule">Schedule</a></li>
+        <li><a href="allteamsschedule">Matches</a></li>
+        <li><a href="tournaments">Tournaments</a></li>
+      </ul>
+    </div>
+  </div>
 
-    <!-- Scoreboard Container -->
-    <div id="scoreboard-container">
-        <div class="loading-message">Loading live scoreboard...</div>
-        <iframe 
-            src="https://clublocker.com/static/league_scoreboard/#/scorecard=204989"
-            allowfullscreen
-            allow="autoplay; encrypted-media"
-            title="Live Squash Match Scoreboard"
-        ></iframe>
+    <div class="container">
+        <button class="toggle-button" id="toggle-layout">Switch to Side-by-Side</button>
+        <div class="stream-cards" id="stream-cards">
+            <div class="court-title">
+                <h1>Court 1</h1>
+            </div>
+            <div class="stream-card" id="twitch-embed1"></div>
+
+            <div class="court-title">
+                <h1>Court 2</h1>
+            </div>
+            <div class="stream-card" id="twitch-embed2"></div>
+
+            <div class="court-title">
+                <h1>Court 3</h1>
+            </div>
+            <div class="stream-card" id="twitch-embed3"></div>
+        </div>
     </div>
 
     <script>
-        // Hide loading message when iframe loads
-        const iframe = document.querySelector('iframe');
-        const loadingMessage = document.querySelector('.loading-message');
-        
-        iframe.addEventListener('load', () => {
-            loadingMessage.style.display = 'none';
+        new Twitch.Embed("twitch-embed1", {
+            width: "100%",
+            height: "500px",
+            channel: "connsquash1",
+            parent: ["localhost"],
+            layout: "video"
         });
 
-        // Error handling
-        iframe.addEventListener('error', () => {
-            loadingMessage.textContent = 'Failed to load live scoreboard. Please refresh the page.';
-            loadingMessage.style.color = '#dc3545';
+        new Twitch.Embed("twitch-embed2", {
+            width: "100%",
+            height: "500px",
+            channel: "connsquash2",
+            parent: ["localhost"],
+            layout: "video"
+        });
+
+        new Twitch.Embed("twitch-embed3", {
+            width: "100%",
+            height: "500px",
+            channel: "connsquash3",
+            parent: ["localhost"],
+            layout: "video"
+        });
+
+        // Toggle button functionality
+        const toggleButton = document.getElementById('toggle-layout');
+        const streamCards = document.getElementById('stream-cards');
+
+        toggleButton.addEventListener('click', () => {
+            streamCards.classList.toggle('side-by-side');
+            if (streamCards.classList.contains('side-by-side')) {
+                toggleButton.textContent = 'Switch to Row Format';
+            } else {
+                toggleButton.textContent = 'Switch to Side-by-Side';
+            }
         });
     </script>
 </body>

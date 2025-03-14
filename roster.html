@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CCSquash -</title>
+  <title>CCSquash - Roster</title>
   <link rel="icon" type="image/png" sizes="32x32" href="/static/ccsquash.jpg">
   <style>
     /* General reset for margins and padding */
@@ -33,7 +33,7 @@
       padding: 12px 40px;
       border-radius: 12px;
       box-shadow: 0 5px 10px rgba(0,0,0,0.2);
-      width: 60%;
+      width: 80%;
       position: fixed;
       top: 15px;
       left: 50%;
@@ -279,6 +279,7 @@
         <li><a href="/">Roster</a></li>
         <li><a href="standings">Standings</a></li>
         <li><a href="compare">Compare</a></li>
+        <li><a href="users">Players</a></li>
       </ul>
     </div>
     <div class="logo">
@@ -425,16 +426,10 @@
             card.addEventListener("click", function(e) {
               e.preventDefault();
               currentPlayerId = player.playerid;
-              modalPlayerName.textContent = player.player.trim() + " Bio";
-              // Set bio from the hard-coded object, or a fallback message
-              bioText.textContent = bios[currentPlayerId] || "No bio provided for this player.";
-              // Show the modal
-              modal.style.display = "block";
               
-              // Set the visit button's action
-              visitProfileButton.onclick = function() {
-                window.location.href = `https://clublocker.com/users/${currentPlayerId}/home`;
-              }
+              window.open(`users?user_id=${currentPlayerId}`, '_blank');
+             
+              
             });
           });
         } catch (error) {
