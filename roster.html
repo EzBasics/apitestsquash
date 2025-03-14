@@ -18,6 +18,7 @@
       position: relative;
       overflow-x: hidden;
     }
+    /* Background image on body */
     body::before {
       content: '';
       position: absolute;
@@ -35,7 +36,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: #fff;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
       padding: 12px 40px;
       border-radius: 12px;
       box-shadow: 0 5px 10px rgba(0,0,0,0.2);
@@ -109,7 +111,7 @@
     .mobile-menu {
       display: none;
       width: 100%;
-      background: #fff;
+      background: rgba(255, 255, 255, 0.95);
       position: fixed;
       top: 70px; /* Below navbar */
       left: 0;
@@ -136,7 +138,7 @@
       padding: 20px;
       width: 100%;
       max-width: 960px;
-      margin: 140px auto 20px; /* Adjusted top margin to avoid overlapping navbar */
+      margin: 140px auto 20px; /* Adjusted to avoid overlapping navbar */
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
       text-align: center;
       max-height: 90vh;
@@ -260,15 +262,12 @@
     }
     /* Media Query for Mobile */
     @media (max-width: 480px) {
-      /* Hide desktop navigation on small screens */
       .nav-container {
         display: none;
       }
-      /* Show hamburger */
       .hamburger {
         display: flex;
       }
-      /* Mobile menu styling (toggled via JavaScript) */
       .mobile-menu {
         display: none;
       }
@@ -373,13 +372,7 @@
 
       async function fetchTeamInfo() {
         try {
-          const response = await fetch("https://api.ussquash.com/resources/teams/40867/info", {
-            headers: {
-              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-                            "AppleWebKit/537.36 (KHTML, like Gecko) " +
-                            "Chrome/58.0.3029.110 Safari/537.3"
-            }
-          });
+          const response = await fetch("https://api.ussquash.com/resources/teams/40867/info");
           if (!response.ok) {
             throw new Error(`Failed to fetch team info: ${response.status}`);
           }
@@ -398,13 +391,7 @@
             const teamNameElement = document.querySelector("h1");
             teamNameElement.textContent = `${teamInfo.TeamName} Squash Team`;
           }
-          const response = await fetch("https://api.ussquash.com/resources/teams/40867/players", {
-            headers: {
-              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-                            "AppleWebKit/537.36 (KHTML, like Gecko) " +
-                            "Chrome/58.0.3029.110 Safari/537.3"
-            }
-          });
+          const response = await fetch("https://api.ussquash.com/resources/teams/40867/players");
           if (!response.ok) {
             throw new Error(`Failed to fetch players data: ${response.status}`);
           }
