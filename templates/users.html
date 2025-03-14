@@ -33,93 +33,192 @@
       color: #333;
       line-height: 1.5;
     }
-    .navbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      background: #fff;
-      z-index: 1000;
-      padding: 3px 0;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-    }
-    .nav-wrapper {
-      width: 80%;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-sizing: border-box;
-    }
-    .nav-container {
-      display: flex;
-      align-items: center;
-      flex: 1;
-    }
-    .nav-container.left {
-      justify-content: flex-start;
-    }
-    .nav-container.right {
-      justify-content: flex-end;
-    }
-    .nav-search {
-      width: 250px;
-      height: 40px;
-      padding: 8px 12px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      margin-right: 10px;
-      font-size: 1.2rem;
-    }
-    .nav-links {
-      display: flex;
-      align-items: center;
-      list-style: none;
-      gap: 15px;
-      margin: 0;
-      padding: 0;
-    }
-    .nav-links li {
-      margin: 0 10px;
-    }
-    .nav-links li a {
-      color: #333;
-      font-family: system-ui, "Segoe UI", Helvetica, Arial, sans-serif,
-        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-      font-size: 1.2rem;
-      font-weight: 500;
-      padding: 6px 0;
-      text-decoration: none;
-      position: relative;
-      text-align: center;
-    }
-    .nav-links li a:before {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      height: 3px;
-      width: 0%;
-      background: #007BFF;
-      border-radius: 12px;
-      transition: all 0.4s ease;
-    }
-    .nav-links li a:hover:before {
-      width: 100%;
-    }
-    .logo {
-      flex: 0.15;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .logo img {
-      width: 50px;
-      transition: transform 0.3s ease;
-    }
-    .logo img:hover {
-      transform: scale(1.2);
-    }
+/* Navbar Container */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95); /* Semi-transparent white */
+  backdrop-filter: blur(10px); /* Frosted glass effect */
+  z-index: 1000;
+  padding: 10px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.nav-wrapper {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px; /* Space between left and right sections */
+}
+
+/* Nav Sections (Left and Right) */
+.nav-section {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Space between items in each section */
+}
+
+/* Logo */
+.logo img {
+  width: 50px;
+  height: 50px;
+  transition: transform 0.3s ease;
+}
+
+.logo img:hover {
+  transform: scale(1.1);
+}
+
+/* Navigation Links */
+.nav-links {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 15px; /* Space between links */
+}
+
+.nav-links li a {
+  color: #333;
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.nav-links li a:hover {
+  color: #4facfe;
+  background: rgba(79, 172, 254, 0.1);
+}
+
+.nav-links li a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: #4facfe;
+  transform: translateX(-50%);
+  transition: width 0.3s ease;
+}
+
+.nav-links li a:hover::after {
+  width: 100%;
+}
+
+/* Search Bar */
+.search-container {
+  position: relative;
+}
+
+.nav-search {
+  width: 200px;
+  height: 40px;
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  background: #f8f8f8;
+  transition: all 0.3s ease;
+}
+
+.nav-search:focus {
+  outline: none;
+  border-color: #4facfe;
+  box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.2);
+  background: #fff;
+}
+
+/* Edit Mode Toggle */
+.edit-mode-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.edit-mode-toggle label {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #e0e0e0;
+  border-radius: 34px;
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: '';
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background: #4facfe;
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .nav-wrapper {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .nav-section {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .nav-search {
+    width: 100%;
+  }
+}
     .container {
       max-width: 1200px;
       margin: 120px auto 0;
@@ -724,30 +823,73 @@
       display: none;
       margin-bottom: 20px;
     }
+    /* Add to existing styles */
+    .timeframe-btns-container {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 15px 0;
+    }
+
+    .timeframe-btn {
+      padding: 8px 16px;
+      border: 2px solid #4facfe;
+      border-radius: 20px;
+      background: white;
+      color: #4facfe;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .timeframe-btn:hover {
+      background: #e8f3ff;
+      transform: translateY(-1px);
+    }
+
+    .timeframe-btn.active {
+      background: #4facfe;
+      color: white;
+      border-color: #4facfe;
+      box-shadow: 0 2px 6px rgba(79, 172, 254, 0.3);
+    }
+
   </style>
 </head>
 <body>
+  
   <!-- Navigation -->
   <div class="navbar">
     <div class="nav-wrapper">
-      <div class="nav-container left">
-        <input id="navSearch" type="search" placeholder="Search..." class="nav-search">
+      <!-- Left Section: Logo and Main Links -->
+      <div class="nav-section left">
+        <div class="logo">
+          <a href="/">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+          </a>
+        </div>
         <ul class="nav-links">
           <li><a href="/">Roster</a></li>
           <li><a href="standings">Standings</a></li>
           <li><a href="compare">Compare</a></li>
+          <li><a href="users">Users</a></li>
         </ul>
       </div>
-      <div class="logo">
-        <a href="/"><img src="{{ url_for('static', filename='logo.png') }}" alt="Logo"></a>
-      </div>
-      <div class="nav-container right">
+  
+      <!-- Right Section: Search, Links, and Toggle -->
+      <div class="nav-section right">
+        <div class="search-container">
+          <input id="navSearch" type="search" placeholder="Player Search..." class="nav-search">
+          
+        </div>
         <ul class="nav-links">
           <li><a href="live">Live</a></li>
           <li><a href="schedule">Schedule</a></li>
-          <li><a href="allteamsschedule">Matchess</a></li>
+          <li><a href="allteamsschedule">Matches</a></li>
         </ul>
-        <div class="edit-mode-toggle" style="margin-left: 20px;">
+        <div class="edit-mode-toggle">
           <label for="editModeToggle">Edit Mode</label>
           <label class="switch">
             <input type="checkbox" id="editModeToggle">
@@ -797,7 +939,7 @@
           <!-- Ratings Widget -->
           <div class="grid-item" id="ratingsWidget">
             <button class="remove-widget-btn">×</button>
-            <h3>RATINGS</h3>
+            <h3>Ratings</h3>
             <div>
               <div id="currentRatingValue" class="big-rating">--</div>
               <div>Universal Squash Rating</div>
@@ -848,12 +990,15 @@
         
         <!-- Right Column -->
         <div id="rightColumn" class="widget-column">
-          <!-- Ratings History Chart Widget -->
-          <div class="grid-item" id="ratingsHistoryCard">
-            <button class="remove-widget-btn">×</button>
-            <h3>RATINGS HISTORY</h3>
-            <canvas id="ratingsHistoryChart"></canvas>
-          </div>
+
+            <!-- Long Term Rating History Widget -->
+            <div class="grid-item" id="ratingsTimeFrameCard">
+              <button class="remove-widget-btn">×</button>
+              <h3>Rating History</h3>
+              <!-- Time frame select populated dynamically -->
+              <div id="timeFrameButtons" class="timeframe-btns-container"></div>
+              <canvas id="ratingsTimeFrameChart"></canvas>
+            </div>
           <!-- Singles Wins Widget -->
           <div class="grid-item" id="Single Wins">
             <button class="remove-widget-btn">×</button>
@@ -866,7 +1011,7 @@
             </div>
           </div>
           <!-- Singles Losses Widget -->
-          <div class="grid-item" id="singlesLossesBox">
+          <div class="grid-item" id="Singles Losses">
             <button class="remove-widget-btn">×</button>
             <div id="singlesLossesChart-header" class="chart-header">
               <div class="chart-title-total"></div>
@@ -901,14 +1046,6 @@
             <div id="ratingChangeList"></div>
           </div>
 
-            <!-- Long Term Rating History Widget -->
-          <div class="grid-item" id="ratingsTimeFrameCard">
-            <button class="remove-widget-btn">×</button>
-            <h3>Long Term Rating History</h3>
-            <!-- Time frame select populated dynamically -->
-            <select id="timeFrameSelect"></select>
-            <canvas id="ratingsTimeFrameChart"></canvas>
-          </div>
           <!-- Right Column Drop Zone (edit mode only) -->
           <div class="drop-zone" data-column="right">Drop widget here</div>
         </div>
@@ -1256,7 +1393,7 @@
                 const [left, right] = game.split('-');
                 return win ? `${left}-${right}` : `${right}-${left}`;
               });
-              const formattedScore = formattedGames.join(' - ');
+              const formattedScore = formattedGames.join(' | ');
 
               // Then update the HTML generation:
               html += `
@@ -1267,6 +1404,7 @@
                     <p>Score: ${formattedScore}</p>
                     <p>${match.Descr || ''}</p>
                     <p>vs. ${opponent}</p>
+                    
                   </div>
                   <button class="insights-btn" onclick="event.stopPropagation(); showGraphModal({ 
                     matchId: '${match.matchId || match.Matchid}', 
@@ -1891,6 +2029,7 @@
         })
         .catch(err => console.error('Error fetching ratings history:', err));
     }
+
     
     function updateLongTermRatingHistory(userId) {
       const apiUrl = `/proxy/user/${userId}/rankings`;
@@ -1923,51 +2062,73 @@
                               (maxDate.getMonth() - minDate.getMonth());
           const options = generateTimeFrameOptions(totalMonths);
           populateTimeFrameSelect(options);
-          const defaultOption = document.getElementById('timeFrameSelect').value;
-          const filteredByTime = filterDataByTimeFrame(window.rankingHistoryData, defaultOption);
-          renderLongTermChart(filteredByTime);
-        })
-        .catch(err => console.error(err));
+
+        // Start with the third option (index 2)
+        const defaultTimeFrame = options[3].value; // Third option
+        const filteredByTime = filterDataByTimeFrame(window.rankingHistoryData, defaultTimeFrame);
+        renderLongTermChart(filteredByTime);
+        
+        // Set the third button as active
+        const buttons = document.querySelectorAll('.timeframe-btn');
+        if (buttons.length > 3) {
+          buttons[3].classList.add('active');
+        }
+      })
+      .catch(err => console.error(err));
       
       function generateTimeFrameOptions(totalMonths) {
         let opts = [];
         opts.push({ label: "All Time", value: "all" });
         if(totalMonths >= 60) {
-          opts.push({ label: "Last 5 Years", value: 60 });
-          opts.push({ label: "Last 3 Years", value: 36 });
-          opts.push({ label: "Last 1 Year", value: 12 });
-          opts.push({ label: "Last 6 Months", value: 6 });
+          opts.push({ label: "5 Years", value: 60 });
+          opts.push({ label: "3 Years", value: 36 });
+          opts.push({ label: "1 Year", value: 12 });
+          opts.push({ label: "6 Months", value: 6 });
         } else if(totalMonths >= 36) {
-          opts.push({ label: "Last 3 Years", value: 36 });
-          opts.push({ label: "Last 2 Years", value: 24 });
-          opts.push({ label: "Last 1 Year", value: 12 });
-          opts.push({ label: "Last 6 Months", value: 6 });
+          opts.push({ label: "3 Years", value: 36 });
+          opts.push({ label: "2 Years", value: 24 });
+          opts.push({ label: "1 Year", value: 12 });
+          opts.push({ label: "6 Months", value: 6 });
         } else if(totalMonths >= 12) {
-          opts.push({ label: "Last 1 Year", value: 12 });
-          opts.push({ label: "Last 9 Months", value: 9 });
-          opts.push({ label: "Last 6 Months", value: 6 });
-          opts.push({ label: "Last 3 Months", value: 3 });
+          opts.push({ label: "1 Year", value: 12 });
+          opts.push({ label: "9 Months", value: 9 });
+          opts.push({ label: "6 Months", value: 6 });
+          opts.push({ label: "3 Months", value: 3 });
         } else {
-          opts.push({ label: "Last 6 Months", value: 6 });
-          opts.push({ label: "Last 3 Months", value: 3 });
-          opts.push({ label: "Last 1 Month", value: 1 });
-          opts.push({ label: "Last 2 Weeks", value: 0.5 });
+          opts.push({ label: "6 Months", value: 6 });
+          opts.push({ label: "3 Months", value: 3 });
+          opts.push({ label: "1 Month", value: 1 });
+          opts.push({ label: "2 Weeks", value: 0.5 });
         }
         return opts;
       }
       
       function populateTimeFrameSelect(options) {
-        const select = document.getElementById('timeFrameSelect');
-        select.innerHTML = '';
-        options.forEach(opt => {
-          const optionElem = document.createElement('option');
-          optionElem.value = opt.value;
-          optionElem.textContent = opt.label;
-          select.appendChild(optionElem);
-        });
-        select.addEventListener('change', function() {
-          const filteredByTime = filterDataByTimeFrame(window.rankingHistoryData, this.value);
-          renderLongTermChart(filteredByTime);
+        const container = document.getElementById('timeFrameButtons');
+        container.innerHTML = '';
+        
+        options.forEach((opt, index) => {
+          const btn = document.createElement('button');
+          btn.className = 'timeframe-btn';
+          btn.textContent = opt.label;
+          btn.dataset.value = opt.value;
+          
+          // Remove this line since we're setting active state in updateLongTermRatingHistory
+          // if (opt.value === "all") btn.classList.add('active');
+          
+          btn.addEventListener('click', function() {
+            // Remove active class from all buttons
+            container.querySelectorAll('.timeframe-btn').forEach(b => 
+              b.classList.remove('active')
+            );
+            // Add active class to clicked button
+            this.classList.add('active');
+            // Filter data and update chart
+            const filteredByTime = filterDataByTimeFrame(window.rankingHistoryData, this.dataset.value);
+            renderLongTermChart(filteredByTime);
+          });
+          
+          container.appendChild(btn);
         });
       }
       
