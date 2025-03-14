@@ -56,6 +56,25 @@ def proxy_user_record(user_id):
         logger.error("Unexpected error: %s", e)
         return jsonify({"error": "An unexpected error occurred while processing your request."}), 500
 
+@app.route("/proxy/user/<int:user_id>/matches/page/1")
+def proxy_user_matches(user_id):
+    """Fetch the user record for the given user."""
+    api_url = f"https://api.ussquash.com/resources/res/user/{user_id}/matches/page/1"
+    logger.info("Fetching user record from: %s", api_url)
+    try:
+        response = requests.get(api_url, cookies=COOKIES, timeout=10)
+        response.raise_for_status()
+        return jsonify(response.json())
+    except requests.exceptions.HTTPError as http_err:
+        logger.error("HTTP error: %s", http_err)
+        return jsonify({"error": f"HTTP error: {http_err}"}), response.status_code
+    except requests.exceptions.RequestException as req_err:
+        logger.error("Request error: %s", req_err)
+        return jsonify({"error": "Error fetching API data."}), 500
+    except Exception as e:
+        logger.error("Unexpected error: %s", e)
+        return jsonify({"error": "An unexpected error occurred while processing your request."}), 500
+
 @app.route("/proxy/liveScoreDetails")
 def proxy_live_score_details():
     # The match_id now can be passed dynamically
@@ -294,6 +313,11 @@ def tournaments():
 @app.route("/singlestournament")
 def singlestournament():
     return send_from_directory(os.getcwd(), "singlestournament.html")
+
+@app.route("/test")
+def test():
+    return send_from_directory(os.getcwd(), "test.html")
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

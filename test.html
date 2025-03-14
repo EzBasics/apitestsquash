@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Search Bar Example</title>
+  <style>
+    /* Basic reset & body style */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f3f3;
+      padding: 20px;
+    }
+
+    /* Container for everything */
+    .search-container {
+      max-width: 480px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    /* The search bar itself */
+    .search-bar {
+      position: relative;
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+    .search-bar input {
+      width: 100%;
+      font-size: 1rem;
+      padding: 0.6rem 2.5rem 0.6rem 2.5rem; /* left/right padding for icon space */
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      outline: none;
+    }
+    /* Search icon inside the input (just a text icon here) */
+    .search-bar::before {
+      content: "🔍";
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.1rem;
+      color: #999;
+    }
+
+    /* Tabs row: All, Movie, Serie, Anime */
+    .search-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .search-tabs button {
+      flex: 1;
+      border: none;
+      border-radius: 6px;
+      padding: 0.6rem;
+      background: #f1f1f1;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .search-tabs button:hover {
+      background: #e6e6e6;
+    }
+    .search-tabs .active {
+      background: #dbeafe; /* highlighted background for the active tab */
+      font-weight: 600;
+    }
+
+    /* Search results list */
+    .search-results {
+      margin-bottom: 1rem;
+    }
+    .search-item {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .search-item img {
+      width: 70px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    .search-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .search-info h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.3rem;
+    }
+    .search-info .meta {
+      font-size: 0.9rem;
+      color: #777;
+      margin-bottom: 0.4rem;
+    }
+    .search-info .desc {
+      font-size: 0.9rem;
+      color: #555;
+      line-height: 1.3;
+    }
+
+    /* "More results" button */
+    .more-results {
+      display: inline-block;
+      margin: 0 auto;
+      padding: 0.6rem 1rem;
+      background: #3b82f6; /* Tailwind “blue-500” style */
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .more-results:hover {
+      background: #2563eb; /* Tailwind “blue-600” style */
+    }
+  </style>
+</head>
+<body>
+
+<div class="search-container">
+  <!-- The search bar -->
+  <div class="search-bar">
+    <input type="text" placeholder="Search..." />
+  </div>
+
+  <!-- Tabs: All, Movie, Serie, Anime -->
+  <div class="search-tabs">
+    <button class="active">All</button>
+    <button>Movie</button>
+    <button>Serie</button>
+    <button>Anime</button>
+  </div>
+
+  <!-- Search results -->
+  <div class="search-results">
+    <div class="search-item">
+      <!-- Poster/thumbnail -->
+      <img src="https://via.placeholder.com/70x100.png?text=Stranger+Things" alt="Stranger Things Poster" />
+      <!-- Info text -->
+      <div class="search-info">
+        <h3>Stranger Things</h3>
+        <div class="meta">serie (2016)</div>
+        <div class="desc">
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed diam nonummy nibh euismod tincidunt.
+        </div>
+      </div>
+    </div>
+
+    <div class="search-item">
+      <img src="https://via.placeholder.com/70x100.png?text=The+100" alt="The 100 Poster" />
+      <div class="search-info">
+        <h3>The 100</h3>
+        <div class="meta">serie (2014)</div>
+        <div class="desc">
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed diam nonummy nibh euismod tincidunt.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- More results button -->
+  <button class="more-results">More results</button>
+</div>
+
+</body>
+</html>
